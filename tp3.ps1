@@ -10,8 +10,9 @@ function CreateUser($name) {
   $user = Get-LocalUser | Where-Object Name -eq $name;
 
   if (!$user) {
-    #$user = New-LocalUser -Name $name -FullName $name -Description "Compte pour $name";
+    New-LocalUser -Name $name -FullName $name -Description "Compte pour $name";
     Write-Host "Création de l'utilisateur $name avec succès!";
+    AssignGroup "$name" "$groupName";
   } else {
     Write-Host "Utilisateur $name déja éxistant!";
   }
@@ -26,6 +27,17 @@ function CreateGroup($name) {
   } else {
     Write-Host "Groupe $name déja éxistant!";
   }
+}
+
+function AssignGroup($user, $group) {
+ $members = Get-LocalGroupMember -Group $group;
+
+ if ($members -clike "*$user") {
+   Write-Host "$user appartient déja au groupe $group";
+ } else {
+   Write-Host "Ajout de l'utilisateur $user dans $group";
+   Add-LocalGroupMember -Group $group -Member $user, "MicrosoftAccount\$user@csfoy.ca";
+ }
 }
 
 function init() {
@@ -43,7 +55,7 @@ function init() {
   }
 }
 
-init;
+#init;
 
 
-#CreateUser("nathan");
+AssignGroup "natha" "Entreprise";
