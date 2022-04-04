@@ -13,6 +13,8 @@ function CreateUser($name) {
     New-LocalUser -Name $name -FullName $name -Description "Compte pour $name";
     Write-Host "Création de l'utilisateur $name avec succès!";
     AssignGroup $name $groupName;
+    CreateFolder $name;
+    CreateFile $name;
   } else {
     Write-Host "Utilisateur $name déja éxistant!";
   }
@@ -43,9 +45,20 @@ function AssignGroup($user, $group) {
 function CreateFolder($name) {
   $folder = "./$name"
   if (Test-Path -Path $folder) {
-    "Le dossier $user est déja éxistant!"
+    Write-Host "Le dossier $user est déja éxistant!";
   } else {
-    New-Item -Path $folder -ItemType Directory
+    New-Item -Path $folder -ItemType Directory;
+  }
+}
+
+function CreateFile($name) {
+  $file = "./$name/accueil.txt";
+   
+  if (Test-Path -Path $file) {
+    Write-Host "Le fichier accueil est déja éxistant!";
+  } else {
+    "Bienvenue à vous, $name!" | Out-File -FilePath $file;
+    Write-Host "Création du fichier accueil";
   }
 }
 
@@ -64,6 +77,4 @@ function init() {
   }
 }
 
-#init;
-
-CreateFolder "nathan";
+init;
