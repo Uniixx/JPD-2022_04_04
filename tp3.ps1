@@ -4,28 +4,42 @@ Clear-Host;
 Set-Location $PSScriptRoot;
 
 $usersFilePath = "./nom.csv";
+$groupName = "Entreprise";
 
 function CreateUser($name) {
   $user = Get-LocalUser | Where-Object Name -eq $name;
 
   if (!$user) {
-    $user = New-LocalUser -Name $name -FullName $name -Description "Compte pour $name";
+    #$user = New-LocalUser -Name $name -FullName $name -Description "Compte pour $name";
     Write-Host "Création de l'utilisateur $name avec succès!";
   } else {
-    Write-Host "Utilisateur déja éxistant!";
+    Write-Host "Utilisateur $name déja éxistant!";
+  }
+}
+
+function CreateGroup($name) {
+  $group = Get-LocalGroup | Where-Object Name -eq $name;
+
+  if (!$group) {
+    $group = New-LocalGroup -Name $name -Description "Groupe pour le travail de JPD";
+    Write-Host "Création du groupe $name avec succès!";
+  } else {
+    Write-Host "Groupe $name déja éxistant!";
   }
 }
 
 function init() {
   $file = Get-Item -Path $usersFilePath -ErrorAction Ignore;
 
+  CreateGroup($groupName);
+
   if ($file) {
     $content = Get-Content $usersFilePath;
     foreach ($line in $content) {
-       Write-Host ($line);
+       CreateUser($line);
     }
   } else {
-    Write-Host "Le fichier $usersFilePath est introuvable!"
+    Write-Host "Le fichier $usersFilePath est introuvable!";
   }
 }
 
